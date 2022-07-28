@@ -70,27 +70,11 @@ router.post('/', (req, res) => {
 // add vote to post
 // needs to go before 'update post info' so express doesn't think 'upvote' is an id
 router.put('/upvote', (req, res) => {
-    Vote.create({
-        user_id: req.body.user_id,
-        post_id: req.body.post_id
-    })
-    .then(() => {
-        // find the post we just voted on to see its info
-        return Post.findOne({
-            where: {
-                id: req.body.post_id
-            },
-            attributes: ['id', 'post_url', 'title', 'created_at', [
-                sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count'
-            ]]
-            // that last array, there, is telling sequelize to run this raw sql query
-            // the sql query is saying to get the number of rows in 'vote' that match the post we've fetched
-        })
-        .then(dbPostData => res.json(dbPostData))
-        .catch(err => {
-            console.log(err);
-            res.status(500).json(err);
-        });
+    Post.upvote(req.body, {Vote})
+    .then(updatedPostData => res.json(updatedPostData))
+    .catch(err => {
+        console.log(err);
+        res.status(400).json(err);
     });
 });
 
