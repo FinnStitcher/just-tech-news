@@ -77,7 +77,7 @@ router.post('/login', (req, res) => {
         
         res.json({ user: dbUserData, message: 'You are now logged in' });
     })
-})
+});
 
 // update user
 router.put('/:id', (req, res) => {

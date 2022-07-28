@@ -11,7 +11,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(routes);
 
 // .sync connects the models to the database, making tables where necessary
-// the force parameter decides whether all the tables should be dropped and recreated on startup
+// the force parameter decides whether all the tables should be dropped and recreated if there was a change
 // false means it won't do that, to be clear
 sequelize.sync({ force: false }).then(() => {
     app.listen(PORT, () => console.log('http://localhost:' + PORT));
