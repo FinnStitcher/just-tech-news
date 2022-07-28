@@ -2,7 +2,13 @@ const {Model, DataTypes} = require('sequelize');
 const bcrypt = require('bcrypt');
 const sequelize = require('../config/connection');
 
-class User extends Model {};
+class User extends Model {
+    // instance method (will on each instance of a User object)
+    // .compare takes an uncrypted password and an encrypted password - each instance of User will be saved with it encrypted
+    checkPassword(loginPw) {
+        return bcrypt.compare(loginPw, this.password);
+    };
+};
 
 // defining table
 User.init(

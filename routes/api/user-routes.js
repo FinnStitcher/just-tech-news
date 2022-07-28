@@ -51,6 +51,34 @@ router.post('/', (req, res) => {
     });
 });
 
+// login
+// it's best to use POST for this because the incoming data is in req.body, not the url
+// remember, the password isnt encrypted yet
+router.post('/login', (req, res) => {
+    // first, we need to confirm that a user with this email exists
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    }).then(dbUserData => {
+        if (!dbUserData) {
+            res.status(400).json({message: 'No user with that email address'});
+            return;
+        }
+        
+        // the dbUserData object has a method that checks if the encrypted and unencrypted passwords match
+        // it returns a boolean value
+        const validPassword = dbUserData.checkPassword(req.body.password);
+
+        if (!validPassword) {
+            res.status(400).json({message: 'Password is incorrect'});
+            return;
+        }
+        
+        res.json({ user: dbUserData, message: 'You are now logged in' });
+    })
+})
+
 // update user
 router.put('/:id', (req, res) => {
     User.update(req.body, {
