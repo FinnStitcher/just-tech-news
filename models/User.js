@@ -1,4 +1,5 @@
 const {Model, DataTypes} = require('sequelize');
+const bcrypt = require('bcrypt');
 const sequelize = require('../config/connection');
 
 class User extends Model {};
@@ -39,6 +40,21 @@ User.init(
     },
     {
         // config
+        // using hooks to encrypt passwords
+        hooks: {
+            // this hook will run before a new instance of User is created (i.e. before a new row is added to the table, i think)
+            // async before the function name
+            async beforeCreate(newUserData) {
+                // function will only progress once bcrypt.hash is done
+                newUserData.password = await bcrypt.hash(newUserData.password, 10);
+                return newUserData;
+            },
+            // this one will run before an update reaches the database
+            async beforeUpdate(updatedUserData) {
+                updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+                return updatedUserData;
+            }
+        },
         // passing in the connection to the database, stored in this variable
         sequelize,
         // no automatic timestamps

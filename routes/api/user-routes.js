@@ -54,6 +54,8 @@ router.post('/', (req, res) => {
 // update user
 router.put('/:id', (req, res) => {
     User.update(req.body, {
+        // necessary to use in conjunction with the beforeUpdate() hook
+        individualHooks: true,
         where: {
             id: req.params.id
         }
