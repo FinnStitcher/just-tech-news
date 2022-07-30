@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Post, User, Vote } = require('../../models');
+const { Post, User, Vote, Comment } = require('../../models');
 const sequelize = require('../../config/connection');
 
 // get all posts
@@ -14,6 +14,10 @@ router.get('/', (req, res) => {
             {
                 model: User,
                 attributes: ['username']
+            },
+            {
+                model: Comment,
+                attributes: [[sequelize.literal('(SELECT COUNT(*) FROM comment WHERE post.id = comment.post_id)'), 'comment_count']]
             }
         ]
     }).then(dbPostData => res.json(dbPostData))
@@ -34,6 +38,15 @@ router.get('/:id', (req, res) => {
             {
                 model: User,
                 attributes: ['username']
+            },
+            // holy shit, you can nest include statements
+            {
+                model: Comment,
+                attributes: ['id', 'comment_text', 'created_at'],
+                include: {
+                    model: User,
+                    attributes: ['username']
+                }
             }
         ]
     })
