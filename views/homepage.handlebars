@@ -1,1 +1,23 @@
-<div>You are on the homepage.</div>
+<ol class="post-list">
+    <!-- telling it to repeat this block of code for each post in the array it gets -->
+    <!-- declaring a variable name - thats in the pipes - isnt necessary, but it makes things super clear -->
+    {{#each posts as |post|}}
+    <li>
+        <article class="post">
+            <div class="title">
+                <a href="{{post.post_url}}" target="_blank">{{post.title}}</a>
+                <span>({{post.post_url}})</span>
+            </div>
+
+            <div class="meta">
+                {{post.vote_count}} point(s) by {{post.user.username}} on
+                {{post.created_at}}
+                |
+                <a href="/post/{{post.id}}">{{post.comments.length}} comment(s)</a>
+            </div>
+        </article>
+    </li>
+    {{/each}}
+</ol>
+
+<!-- note the use of double curly braces when we're inserting a variable, as opposed to the triple braces when we're inserting another template -->
