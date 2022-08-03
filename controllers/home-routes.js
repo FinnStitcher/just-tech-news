@@ -47,7 +47,7 @@ router.get("/", (req, res) => {
 			// we're using handlebars, so we use .render, not .send, and specify the template
 			// res.render can take an object as a second argument, which describes all the data we want to send to the page we're loading
 			// what page we're loading at the given endpoint is determined by the first argument
-			res.render("homepage", { posts });
+			res.render("homepage", { posts, loggedIn: req.session.loggedIn });
 			// putting the array into an object so we can more easily add things to this template later on
 		})
 		.catch(err => {
