@@ -98,7 +98,8 @@ router.get("/post/:id", (req, res) => {
         
         // we're wrapping the post object in another object, not destructuring it
         // we do this in case we want to send multiple objects to the page
-        res.render("single-post", { post })
+        res.render("single-post", { post, loggedIn: req.session.loggedIn });
+        // see, i told you it was a good idea to put it in an object
     })
     .catch(err => {
         console.log(err);
