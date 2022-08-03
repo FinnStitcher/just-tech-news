@@ -83,12 +83,21 @@ router.post('/', (req, res) => {
 // add vote to post
 // needs to go before 'update post info' so express doesn't think 'upvote' is an id
 router.put('/upvote', (req, res) => {
-    Post.upvote(req.body, {Vote})
-    .then(updatedPostData => res.json(updatedPostData))
-    .catch(err => {
-        console.log(err);
-        res.status(400).json(err);
-    });
+    // only logged-in users should be able to vote
+    // so we check if there's a session active
+    if (req.session) {
+        // req.body will contain the post id
+        // we get the user id from the session data
+        Post.upvote(
+            { ...req.body, user_id: req.session.user_id },
+            { Vote, User }
+        )
+        .then(updatedPostData => res.json(updatedPostData))
+        .catch(err => {
+            console.log(err);
+            res.status(400).json(err);
+        });        
+    }
 });
 
 // update post info
