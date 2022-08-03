@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { Post, User, Vote, Comment } = require('../../models');
 const sequelize = require('../../config/connection');
 
+// /api/posts
+
 // get all posts
 // as with the matching route in user-routes, we're just sending the data back as json, nice and straightforward
 router.get('/', (req, res) => {
