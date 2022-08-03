@@ -15,9 +15,9 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // creating session stuff
-// not really sure what all these options do; i'll ask in office hours
+// not really sure what all these options do
 const sess = {
-    secret: 'Secret tunnel',
+    secret: process.env.SECRET,
     cookie: {},
     resave: false,
     saveUninitialized: true,
@@ -27,11 +27,12 @@ const sess = {
     })
 };
 
-// session(sess) cannot go before the handlebars setup
-app.use(session(sess));
+// session(sess) cannot go before the handlebars methods
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session(sess));
 
 // more handlebars setup
 app.engine('handlebars', hbs.engine);

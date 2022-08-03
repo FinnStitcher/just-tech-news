@@ -1,0 +1,39 @@
+<article class="post">
+    <div class="title">
+        <a href="{{post.post_url}}" target="_blank">{{post.title}}</a>
+        <span>({{post.post_url}})</span>
+    </div>
+
+    <div class="meta">
+        {{post.vote_count}} point(s) by {{post.user.username}} on
+        {{post.created_at}}
+        |
+        <a href="/post/{{post.id}}">{{post.comments.length}} comment(s)</a>
+    </div>
+</article>
+
+<form class="comment-form">
+    <div>
+        <textarea name="comment-body"></textarea>
+    </div>
+
+    <div>
+        <button type="submit">add comment</button>
+        <button type="button" class="upvote-btn">upvote</button>
+    </div>
+</form>
+
+<div class="comments">
+    <!-- we're looping thru the comments array, and we aren't aliasing, so we don't need to specify 'comment.user.username' or such -->
+    {{#each post.comments as |el|}}
+    <section class="comment">
+        <div class="meta">
+            {{el.user.username}} on {{el.created_at}}
+        </div>
+
+        <div class="text">
+            {{el.comment_text}}
+        </div>
+    </section>
+    {{/each}}
+</div>
