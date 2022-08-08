@@ -40,7 +40,7 @@ async function signupHandler (event) {
 
         // check if the response came back ok
         if (response.ok) {
-            console.log('success');
+            document.location.replace('/dashboard');
         } else {
             alert(response.statusText);
         }

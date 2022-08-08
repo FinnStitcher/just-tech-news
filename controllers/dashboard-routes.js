@@ -42,4 +42,35 @@ router.get('/', withAuth, (req, res) => {
     })
 });
 
+// edit post
+router.get('/edit/:id', withAuth, (req, res) => {
+    Post.findOne({
+        where: {
+            id: req.params.id
+        },
+        attributes: [
+            'id', 'post_url', 'title', 'created_at',
+            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+        ],
+        include: {
+            model: Comment,
+            attributes: ['id', 'comment_text', 'created_at'],
+            include: {
+                model: User,
+                attributes: ['username']
+            }
+        }
+    })
+    .then(dbPostData => {
+        if (!dbPostData) {
+            res.status(404).json({message: 'No post with that ID was found'});
+            return;
+        }
+        
+        const post = dbPostData.get({plain: true});
+
+        res.render('edit-post', {post})
+    })
+})
+
 module.exports = router;
