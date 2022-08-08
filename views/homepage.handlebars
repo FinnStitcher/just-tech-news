@@ -1,0 +1,11 @@
+<ol class="post-list">
+    <!-- telling it to repeat this block of code for each post in the array it gets -->
+    <!-- declaring a variable name - thats in the pipes - isnt necessary, but it makes things super clear -->
+    {{#each posts as |post|}}
+    <li>
+        {{> post-info post}}
+    </li>
+    {{/each}}
+</ol>
+
+<!-- note the use of double curly braces when we're inserting a variable, as opposed to the triple braces when we're inserting another template -->

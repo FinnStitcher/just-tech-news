@@ -1,6 +1,12 @@
 const router = require('express').Router();
 const { User, Post, Vote, Comment } = require('../../models');
 
+const withAuth = require('../../utils/auth');
+
+// no idea how the session thing gets in here but if it works it works
+// i guess express-session is automatically attaching the .session property to the request when it goes through to here?
+// middleware...
+
 // get all users
 router.get('/', (req, res) => {
     User.findAll({
@@ -62,14 +68,28 @@ router.get('/:id', (req, res) => {
 });
 
 // add new user
-router.post('/', (req, res) => {
+router.post('/', withAuth, (req, res) => {
     // keys are the field names defined in the User model (class)
     User.create({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password
     })
-    .then(dbUserData => res.json(dbUserData))
+    .then(dbUserData => {
+        // when a new user is added, log them in automatically
+        // req.session.save() initializes a new session
+        req.session.save(() => {
+            console.log(req.session);
+
+            // storing data about the user
+            // we're declaring new properties, not reassigning old ones, i think
+            req.session.user_id = dbUserData.id;
+            req.session.username = dbUserData.username;
+            req.session.loggedIn = true;
+
+            res.json(dbUserData);
+        });
+    })
     .catch(err => {
         console.log(err);
         res.status(500).json(err);
@@ -100,12 +120,31 @@ router.post('/login', (req, res) => {
             return;
         }
         
-        res.json({ user: dbUserData, message: 'You are now logged in' });
+        req.session.save(() => {
+            req.session.user_id = dbUserData.id;
+            req.session.username = dbUserData.username;
+            req.session.loggedIn = true;
+
+            res.json({ user: dbUserData, message: 'You are now logged in'});
+        })
     })
 });
 
+router.post('/logout', withAuth, (req, res) => {
+    // if this request came from a logged-in user, destroy the session
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+            // 200s mean something went right
+            res.status(204).end();
+        });
+    } else {
+        // otherwise, you shouldn't be seeing this page, so go away
+        res.status(404).end();
+    }
+})
+
 // update user
-router.put('/:id', (req, res) => {
+router.put('/:id', withAuth, (req, res) => {
     User.update(req.body, {
         // necessary to use in conjunction with the beforeUpdate() hook
         individualHooks: true,
@@ -127,7 +166,7 @@ router.put('/:id', (req, res) => {
 });
 
 // delete user
-router.delete('/:id', (req, res) => {
+router.delete('/:id', withAuth, (req, res) => {
     User.destroy({
         where: {
             id: req.params.id
